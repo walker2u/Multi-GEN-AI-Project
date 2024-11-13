@@ -18,6 +18,7 @@ import { Loader } from '@/components/loader'
 import { cn } from '@/lib/utils'
 import UserAvatar from '@/components/user-avatar'
 import BotAvatar from '@/components/bot-avatar'
+import { useProModel } from '@/hooks/use-pro-modal'
 
 type Message = {
     role: string;
@@ -25,6 +26,7 @@ type Message = {
 };
 
 const ConversationPage = () => {
+    const proModel = useProModel();
     const router = useRouter();
     const [messages, setMessages] = useState<Message[]>([]);
     console.log("Hereeeeee", messages);
@@ -55,8 +57,9 @@ const ConversationPage = () => {
             form.reset();
 
         } catch (error: any) {
-            //TODO openai Pro Model
-            console.log("Hereeeeee", error);
+            if (error?.response?.status === 403) {
+                proModel.onOpen();
+            }
         } finally {
             router.refresh();
         }
