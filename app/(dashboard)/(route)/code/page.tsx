@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils'
 import UserAvatar from '@/components/user-avatar'
 import BotAvatar from '@/components/bot-avatar'
 import ReactMarkdown from 'react-markdown'
+import { useProModel } from '@/hooks/use-pro-modal'
 
 type Message = {
     role: string;
@@ -26,6 +27,7 @@ type Message = {
 };
 
 const CodePage = () => {
+    const proModel = useProModel();
     const router = useRouter();
     const [messages, setMessages] = useState<Message[]>([]);
     console.log("Hereeeeee", messages);
@@ -56,8 +58,9 @@ const CodePage = () => {
             form.reset();
 
         } catch (error: any) {
-            //TODO openai Pro Model
-            console.log("Hereeeeee", error);
+            if (error?.response?.status === 403) {
+                proModel.onOpen();
+            }
         } finally {
             router.refresh();
         }
@@ -115,7 +118,7 @@ const CodePage = () => {
                                     key={idx}
                                     className={cn('p-8 w-full flex items-start gap-x-8 rounded-lg', message.role === 'user' ? 'bg-white border border-black/10' : 'bg-muted')}>
                                     {message.role === 'user' ? <UserAvatar /> : <BotAvatar />}
-                                    <p className='text-sm'>
+                                    <div className='text-sm'>
                                         <ReactMarkdown components={{
                                             pre: ({ node, ...props }) => (
                                                 <div className='overflow-auto w-full my-2 bg-black/10 p-2 rounded-lg'>
@@ -130,7 +133,7 @@ const CodePage = () => {
                                         >
                                             {message.content?.toString()}
                                         </ReactMarkdown>
-                                    </p>
+                                    </div>
                                 </div>
                             ))
                         }
