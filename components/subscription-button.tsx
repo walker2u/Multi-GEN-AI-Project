@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import axios from "axios";
 import React from "react";
 import { set } from "zod";
+import toast from "react-hot-toast";
 
 export const SubscriptionButton = ({ isPro }: { isPro: boolean }) => {
     const [loading, setLoading] = React.useState(false);
@@ -14,7 +15,7 @@ export const SubscriptionButton = ({ isPro }: { isPro: boolean }) => {
             const response = await axios.get("/api/stripe");
             window.location.href = response.data.url;
         } catch (error) {
-            console.log("Billing client error", error);
+            toast.error("Something went wrong");
         } finally {
             setLoading(false);
         }
